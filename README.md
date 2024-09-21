@@ -1,6 +1,6 @@
 Dijkstra's algorithm implementation using SDL2 for visualization.
 
-![](https://giphy.com/gifs/Zcz1UgPByJxkVWRBC3)
+![](https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExNnU5am52OHVuZHRscWQzM3E3cTM1b3FvZm9lcXd0bGNua21qM2s4dSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Zcz1UgPByJxkVWRBC3/giphy.gif)
 
 Toggle paint/erase mode with P
 
