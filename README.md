@@ -1,5 +1,7 @@
 Dijkstra's algorithm implementation using SDL2 for visualization.
 
+![Alt Text](https://giphy.com/gifs/Zcz1UgPByJxkVWRBC3)
+
 Toggle paint/erase mode with P
 
 Press Q to set a starting point
