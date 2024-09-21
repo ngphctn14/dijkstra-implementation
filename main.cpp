@@ -60,7 +60,7 @@ int main(int argc, char* argv[]) {
 	bool draw_path = false;
 	SDL_Event e;
 
-	int x_mouse, y_mouse;
+	int last_point_x = 0, last_point_y = 0;
 
 	while (!quit) {
 		frame_start = SDL_GetTicks();
@@ -126,7 +126,7 @@ int main(int argc, char* argv[]) {
 				break;
 			}
 		}
-		
+
 		// Set background color
 		SDL_SetRenderDrawColor(renderer, background_color.r, background_color.g, background_color.b, background_color.a);
 		SDL_RenderClear(renderer);
@@ -149,23 +149,22 @@ int main(int argc, char* argv[]) {
 		int point_x = cursor.x/graph.cell_size; // cursor x position in grid's width
 		int point_y = cursor.y/graph.cell_size; // cursor y position in grid's height
 
-		bool is_inside = (point_x >= 0 && point_x < graph.grid_width) && (point_y >= 0 && point_y < graph.grid_height);
+		bool is_inside = (point_x >= 0 && point_x < graph.grid_width) && (point_y >= 0 && point_y < graph.grid_height)
+						&& (last_point_x >= 0 && last_point_x < graph.grid_width) && (last_point_y >= 0 && last_point_y < graph.grid_height);
 
 		if (is_being_dragged) {
 
 			if (is_inside) {
-				int x = graph.grid_arr[point_y][point_x];
 
-				bool is_end_or_start = (cursor.x == end_point.x && cursor.y == end_point.y) || (cursor.x == start_point.x && cursor.y == start_point.y);
-				if (x == 1 && is_painting && !is_end_or_start) {
-					graph.remove_node(point_y*graph.grid_width + point_x);
-				} else if (x == 0 && !is_painting && !is_end_or_start) {
-					graph.add_node(point_y*graph.grid_width + point_x);
+				int step_x = abs(last_point_x - point_x);
+				int step_y = abs(last_point_y - point_y);
+
+				if (step_x > step_y) {
+					graph.draw_line_h(point_x, point_y, last_point_x, last_point_y, end_point, start_point, is_painting);
+				} else {
+					graph.draw_line_v(point_x, point_y, last_point_x, last_point_y, end_point, start_point, is_painting);
 				}
 
-				if (!is_end_or_start) {
-					graph.grid_arr[point_y][point_x] = !is_painting;
-				}
 			}
 		}
 
@@ -223,13 +222,16 @@ int main(int argc, char* argv[]) {
 		SDL_RenderPresent(renderer);
 
 		frame_time = SDL_GetTicks() - frame_start;
+
+		last_point_x = point_x;
+		last_point_y = point_y;
+
 		if (frame_time < SCREEN_TICKS_PER_FRAME) {
 			SDL_Delay(SCREEN_TICKS_PER_FRAME - frame_time);
 		}
 	}
 
-	SDL_DestroyRenderer(renderer);
-	SDL_DestroyWindow(window);
+
 	SDL_Quit();
 
 	return 0;

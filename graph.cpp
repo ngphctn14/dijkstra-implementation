@@ -12,10 +12,6 @@ graph::graph(int _scalar, int _cell_size, int _grid_width, int _grid_height) {
 	init_list();
 }
 
-void graph::generate_maze() {
-
-}
-
 void graph::dijkstra(int src, int dest, std::vector<int>& path) {
 	if (src == dest) {
 		return;
@@ -169,5 +165,97 @@ void graph::remove_node(int u) {
 	if (i + 1 < grid_arr.size() && grid_arr[i+1][j] == 1) {
 		int down_i = i + 1;
 		remove_edge(i*grid_width + j, down_i*grid_width + j);
+	}
+}
+
+void graph::draw_line_h(int x0, int y0, int x1, int y1, const SDL_Rect& end_point, const SDL_Rect& start_point, bool is_painting) {
+	if (x0 > x1) {
+		int temp = x1;
+		x1 = x0;
+		x0 = temp;
+
+		temp = y1;
+		y1 = y0;
+		y0 = temp;
+	}
+
+	int dx = x1 - x0;
+	int dy = y1 - y0;
+
+	int dir = dy < 0 ? -1 : 1;
+	dy *= dir;
+
+	if (dx != 0) {
+		int y = y0;
+		int p = 2*dy - dx;
+		for (int i = 0; i < dx + 1; i++) {
+			int xi = x0 + i;
+
+			int cell = grid_arr[y][xi];
+
+			bool is_end_or_start = (xi == end_point.x && y == end_point.y) || (xi == start_point.x && y == start_point.y);
+
+			if (cell == 1 && is_painting && !is_end_or_start) {
+				remove_node(y*grid_width + xi);
+			} else if (cell == 0 && !is_painting && !is_end_or_start) {
+				add_node(y*grid_width + xi);
+			}
+
+			if (!is_end_or_start) {
+				grid_arr[y][xi] = !is_painting;
+			}
+			if (p >= 0) {
+				y += dir;
+				p = p - 2*dx;
+			}
+			p = p + 2*dy;
+
+		}
+	}
+}
+
+void graph::draw_line_v(int x0, int y0, int x1, int y1, const SDL_Rect& end_point, const SDL_Rect& start_point, bool is_painting) {
+	if (y0 > y1) {
+		int temp = x1;
+		x1 = x0;
+		x0 = temp;
+
+		temp = y1;
+		y1 = y0;
+		y0 = temp;
+	}
+
+	int dx = x1 - x0;
+	int dy = y1 - y0;
+
+	int dir = dx < 0 ? -1 : 1;
+	dx *= dir;
+
+	if (dy != 0) {
+		int x = x0;
+		int p = 2*dx - dy;
+		for (int i = 0; i < dy + 1; i++) {
+			int yi = y0 + i;
+
+			int cell = grid_arr[yi][x];
+
+			bool is_end_or_start = (x == end_point.x && yi == end_point.y) || (x == start_point.x && yi == start_point.y);
+
+			if (cell == 1 && is_painting && !is_end_or_start) {
+				remove_node(yi*grid_width + x);
+			} else if (cell == 0 && !is_painting && !is_end_or_start) {
+				add_node(yi*grid_width + x);
+			}
+
+			if (!is_end_or_start) {
+				grid_arr[yi][x] = !is_painting;
+			}
+			if (p >= 0) {
+				x += dir;
+				p = p - 2*dy;
+			}
+			p = p + 2*dx;
+
+		}
 	}
 }
